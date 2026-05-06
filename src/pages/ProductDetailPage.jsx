@@ -1,0 +1,291 @@
+import { useState, useEffect } from "react"
+import { useParams, Link } from "react-router-dom"
+import {
+  ShoppingCart, Heart, ArrowLeft, Star, Truck,
+  ShieldCheck, RefreshCw, Minus, Plus, Share2
+} from "lucide-react"
+import { useCart } from "../context/CartContext"
+import { fetchProductById, fetchProducts } from "../api/productApi"
+import ProductCard from "../components/ProductCard"
+import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
+
+function formatPrice(amount) {
+  return "₦" + amount.toLocaleString("en-NG")
+}
+
+function ProductDetailPage() {
+  const { id }                    = useParams()
+  const { addToCart }             = useCart()
+  const [product, setProduct]     = useState(null)
+  const [related, setRelated]     = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [error, setError]         = useState(null)
+  const [quantity, setQuantity]   = useState(1)
+  const [activeTab, setActiveTab] = useState("description")
+  const [added, setAdded]         = useState(false)
+
+  async function loadProduct() {
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await fetchProductById(id)
+      setProduct(data)
+      const all = await fetchProducts({ category: data.category })
+      setRelated(all.filter((p) => p._id !== data._id).slice(0, 4))
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadProduct()
+    window.scrollTo(0, 0)
+  }, [id])
+
+  function handleAddToCart() {
+    for (let i = 0; i < quantity; i++) addToCart(product)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
+
+  if (loading) return <LoadingSpinner message="Loading product..." />
+  if (error)   return <ErrorMessage message={error} onRetry={loadProduct} />
+  if (!product) return null
+
+  const { name, price, oldPrice, rating, reviews, vendor, image, badge, inStock, category } = product
+  const discount = oldPrice ? Math.round(((oldPrice - price) / oldPrice) * 100) : null
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-10">
+
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-sm text-gray-400 mb-8 flex-wrap">
+        <Link to="/" className="hover:text-primary transition">Home</Link>
+        <span>/</span>
+        <Link to="/products" className="hover:text-primary transition">Products</Link>
+        <span>/</span>
+        <Link to={`/products?category=${encodeURIComponent(category)}`} className="hover:text-primary transition">{category}</Link>
+        <span>/</span>
+        <span className="text-gray-600 font-medium truncate max-w-xs">{name}</span>
+      </div>
+
+      {/* Main Section */}
+      <div className="flex flex-col md:flex-row gap-10 mb-16">
+
+        {/* Image */}
+        <div className="flex-1">
+          <div className="relative rounded-3xl overflow-hidden bg-gray-100 aspect-square">
+            <img src={image} alt={name} className="w-full h-full object-cover" />
+            {badge && (
+              <span className="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">{badge}</span>
+            )}
+            {discount && (
+              <span className="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">-{discount}% OFF</span>
+            )}
+            {!inStock && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <span className="bg-white text-gray-800 font-bold px-6 py-3 rounded-full">Out of Stock</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 flex flex-col gap-4">
+          <Link to="/vendors" className="text-primary font-semibold text-sm hover:underline w-fit">{vendor}</Link>
+          <h1 className="text-3xl font-extrabold text-gray-800 leading-tight">{name}</h1>
+
+          {/* Rating */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              {[1,2,3,4,5].map((star) => (
+                <Star key={star} size={16}
+                  className={star <= Math.round(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}
+                />
+              ))}
+            </div>
+            <span className="text-sm font-semibold text-gray-700">{rating}</span>
+            <span className="text-sm text-gray-400">({reviews} reviews)</span>
+          </div>
+
+          {/* Price */}
+          <div className="flex items-center gap-3">
+            <span className="text-3xl font-extrabold text-gray-900">{formatPrice(price)}</span>
+            {oldPrice && <span className="text-lg text-gray-400 line-through">{formatPrice(oldPrice)}</span>}
+            {discount && <span className="text-green-600 font-bold text-sm">You save {formatPrice(oldPrice - price)}</span>}
+          </div>
+
+          <hr className="border-gray-200" />
+
+          {/* Quantity */}
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-semibold text-gray-700">Quantity:</span>
+            <div className="flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-2">
+              <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="text-gray-500 hover:text-primary transition">
+                <Minus size={16} />
+              </button>
+              <span className="font-bold text-gray-800 w-6 text-center">{quantity}</span>
+              <button onClick={() => setQuantity((q) => q + 1)} className="text-gray-500 hover:text-primary transition">
+                <Plus size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={handleAddToCart}
+              disabled={!inStock}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition
+                ${added ? "bg-green-500 text-white" : "bg-dark text-white hover:bg-primary"}
+                disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              <ShoppingCart size={18} />
+              {added ? "Added to Cart! ✓" : inStock ? "Add to Cart" : "Out of Stock"}
+            </button>
+            <button className="p-3 border border-gray-200 rounded-xl hover:border-red-400 hover:text-red-500 transition">
+              <Heart size={20} />
+            </button>
+            <button className="p-3 border border-gray-200 rounded-xl hover:border-primary hover:text-primary transition">
+              <Share2 size={20} />
+            </button>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="grid grid-cols-3 gap-3 mt-2">
+            {[
+              { icon: Truck,       color: "bg-green-50 text-green-600",  title: "Fast Delivery",   sub: "Nationwide"    },
+              { icon: ShieldCheck, color: "bg-blue-50 text-blue-600",    title: "Verified Seller", sub: "100% trusted"  },
+              { icon: RefreshCw,   color: "bg-orange-50 text-orange-600",title: "Easy Returns",    sub: "7-day policy"  },
+            ].map(({ icon: Icon, color, title, sub }) => (
+              <div key={title} className="flex flex-col items-center gap-1 bg-gray-50 rounded-xl p-3 text-center">
+                <Icon size={20} className="text-primary" />
+                <p className="text-xs font-semibold text-gray-700">{title}</p>
+                <p className="text-xs text-gray-400">{sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="mb-16">
+        <div className="flex gap-1 border-b border-gray-200 mb-6">
+          {["description", "specs", "reviews"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-5 py-2.5 text-sm font-semibold capitalize transition border-b-2 -mb-px
+                ${activeTab === tab ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            >
+              {tab === "reviews" ? `Reviews (${reviews})` : tab}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "description" && (
+          <div className="text-gray-600 text-sm leading-relaxed max-w-2xl flex flex-col gap-3">
+            <p>The <strong>{name}</strong> is one of the most sought-after products in its category. Sold by <strong>{vendor}</strong>, this product combines premium quality with outstanding performance.</p>
+            <p>With thousands of satisfied customers and a rating of <strong>{rating}/5</strong>, you can shop with confidence.</p>
+            <p>Available for nationwide delivery across Nigeria. Order today and enjoy fast, reliable shipping right to your doorstep.</p>
+          </div>
+        )}
+
+        {activeTab === "specs" && (
+          <div className="max-w-lg">
+            <table className="w-full text-sm">
+              <tbody>
+                {[
+                  ["Category",     category],
+                  ["Vendor",       vendor],
+                  ["Availability", inStock ? "In Stock" : "Out of Stock"],
+                  ["Rating",       `${rating} / 5`],
+                  ["Reviews",      reviews],
+                  ["Price",        formatPrice(price)],
+                ].map(([label, value]) => (
+                  <tr key={label} className="border-b border-gray-100">
+                    <td className="py-3 pr-6 font-semibold text-gray-700 w-40">{label}</td>
+                    <td className="py-3 text-gray-600">{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeTab === "reviews" && (
+          <div className="flex flex-col gap-4 max-w-2xl">
+            <div className="flex items-center gap-4 bg-gray-50 rounded-2xl p-5">
+              <div className="text-center">
+                <p className="text-5xl font-extrabold text-gray-800">{rating}</p>
+                <div className="flex items-center gap-0.5 justify-center mt-1">
+                  {[1,2,3,4,5].map((star) => (
+                    <Star key={star} size={14}
+                      className={star <= Math.round(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-1">{reviews} reviews</p>
+              </div>
+              <div className="flex-1 flex flex-col gap-1.5">
+                {[5,4,3,2,1].map((star) => (
+                  <div key={star} className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 w-3">{star}</span>
+                    <Star size={11} className="text-yellow-400 fill-yellow-400" />
+                    <div className="flex-1 bg-gray-200 rounded-full h-1.5">
+                      <div className="bg-yellow-400 h-1.5 rounded-full"
+                        style={{ width: `${star === Math.round(rating) ? 65 : star > Math.round(rating) ? 10 : 20}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {[
+              { name: "Chidi O.",  text: "Absolutely love this product! Fast delivery and exactly as described.", rating: 5 },
+              { name: "Amaka S.",  text: "Great value for money. The quality exceeded my expectations.",          rating: 4 },
+              { name: "Emeka T.",  text: "Good product overall. Delivery took a bit longer than expected.",       rating: 4 },
+            ].map((review, i) => (
+              <div key={i} className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+                      {review.name[0]}
+                    </div>
+                    <span className="font-semibold text-sm text-gray-800">{review.name}</span>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    {[1,2,3,4,5].map((star) => (
+                      <Star key={star} size={12}
+                        className={star <= review.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300 fill-gray-300"}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">{review.text}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Related Products */}
+      {related.length > 0 && (
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Related Products</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {related.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        </div>
+      )}
+
+    </div>
+  )
+}
+
+export default ProductDetailPage
