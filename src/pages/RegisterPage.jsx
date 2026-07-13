@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Mail, Lock, Eye, EyeOff, User, Phone } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { registerUser } from "../api/authApi"
+import { useToast } from "../context/ToastContext"
 
 function Field({ label, name, value, onChange, type = "text", placeholder, icon: Icon, rightEl, error }) {
   return (
@@ -27,16 +28,17 @@ function Field({ label, name, value, onChange, type = "text", placeholder, icon:
 }
 
 function RegisterPage() {
-  const navigate       = useNavigate()
-  const { register }   = useAuth()
+  const navigate = useNavigate()
+  const { register } = useAuth()
+  const { showToast } = useToast()
 
   const [form, setForm] = useState({
     name: "", email: "", phone: "", password: "", confirm: ""
   })
-  const [errors, setErrors]             = useState({})
+  const [errors, setErrors] = useState({})
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirm, setShowConfirm]   = useState(false)
-  const [loading, setLoading]           = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -77,19 +79,14 @@ function RegisterPage() {
     setLoading(true)
     try {
       const data = await registerUser({
-        name:     form.name,
-        email:    form.email,
-        phone:    form.phone,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
         password: form.password,
       })
-      register({
-        name:   data.name,
-        email:  data.email,
-        phone:  data.phone,
-        avatar: data.name.slice(0, 2).toUpperCase(),
-        token:  data.token,
-      })
-      navigate("/")
+      // ✅ Redirect to OTP page with email
+      navigate("/verify-otp", { state: { email: form.email } })
+      showToast("Check your email for OTP! 📧", "success")
     } catch (err) {
       setErrors({ email: err.message })
     } finally {
@@ -105,16 +102,16 @@ function RegisterPage() {
           {/* Logo */}
           <div className="text-center mb-8">
             <Link to="/" className="text-3xl font-extrabold text-dark">
-              Shop<span className="text-primary">Hub</span>
+              Vend<span className="text-primary">ly</span>
             </Link>
             <p className="text-gray-500 text-sm mt-2">Create your free account today</p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-            <Field label="Full Name"       name="name"     value={form.name}     onChange={handleChange} placeholder="John Doe"          icon={User}  error={errors.name}     />
-            <Field label="Email Address"   name="email"    value={form.email}    onChange={handleChange} placeholder="you@example.com"   icon={Mail}  error={errors.email}    />
-            <Field label="Phone Number"    name="phone"    value={form.phone}    onChange={handleChange} placeholder="08012345678"        icon={Phone} error={errors.phone}    />
+            <Field label="Full Name" name="name" value={form.name} onChange={handleChange} placeholder="John Doe" icon={User} error={errors.name} />
+            <Field label="Email Address" name="email" value={form.email} onChange={handleChange} placeholder="you@example.com" icon={Mail} error={errors.email} />
+            <Field label="Phone Number" name="phone" value={form.phone} onChange={handleChange} placeholder="08012345678" icon={Phone} error={errors.phone} />
 
             <Field
               label="Password" name="password" value={form.password}

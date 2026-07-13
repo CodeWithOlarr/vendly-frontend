@@ -5,16 +5,15 @@ async function parseResponse(res) {
   if (contentType && contentType.includes("application/json")) {
     return res.json()
   }
-  // If not JSON, read as text and throw it
   const text = await res.text()
   throw new Error(text || `Server error: ${res.status}`)
 }
 
 export async function loginUser({ email, password }) {
   const res = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
+    method:  "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body:    JSON.stringify({ email, password }),
   })
   const data = await parseResponse(res)
   if (!res.ok) throw new Error(data.message || "Login failed")
@@ -23,11 +22,93 @@ export async function loginUser({ email, password }) {
 
 export async function registerUser({ name, email, phone, password }) {
   const res = await fetch(`${API_URL}/auth/register`, {
-    method: "POST",
+    method:  "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, phone, password }),
+    body:    JSON.stringify({ name, email, phone, password }),
   })
   const data = await parseResponse(res)
   if (!res.ok) throw new Error(data.message || "Registration failed")
+  return data
+}
+
+export async function verifyOTP({ email, otp }) {
+  const res = await fetch(`${API_URL}/auth/verify-otp`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ email, otp }),
+  })
+  const data = await parseResponse(res)
+  if (!res.ok) throw new Error(data.message || "Verification failed")
+  return data
+}
+
+export async function resendOTP({ email }) {
+  const res = await fetch(`${API_URL}/auth/resend-otp`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ email }),
+  })
+  const data = await parseResponse(res)
+  if (!res.ok) throw new Error(data.message || "Failed to resend OTP")
+  return data
+}
+
+export async function fetchMe(token) {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = await parseResponse(res)
+  if (!res.ok) throw new Error(data.message || "Session expired")
+  return data
+}
+
+
+export async function updateProfile(profileData, token) {
+  const res = await fetch(`${API_URL}/auth/profile`, {
+    method:  "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization:  `Bearer ${token}`,
+    },
+    body: JSON.stringify(profileData),
+  })
+  const data = await parseResponse(res)
+  if (!res.ok) throw new Error(data.message || "Failed to update profile")
+  return data
+}
+
+export async function changePassword(passwordData, token) {
+  const res = await fetch(`${API_URL}/auth/password`, {
+    method:  "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization:  `Bearer ${token}`,
+    },
+    body: JSON.stringify(passwordData),
+  })
+  const data = await parseResponse(res)
+  if (!res.ok) throw new Error(data.message || "Failed to change password")
+  return data
+}
+
+export async function forgotPassword(email) {
+  const res = await fetch(`${API_URL}/auth/forgot-password`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ email }),
+  })
+  const data = await parseResponse(res)
+  if (!res.ok) throw new Error(data.message || "Failed to send reset code")
+  return data
+}
+
+export async function resetPassword({ email, otp, newPassword }) {
+  const res = await fetch(`${API_URL}/auth/reset-password`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ email, otp, newPassword }),
+  })
+  const data = await parseResponse(res)
+  if (!res.ok) throw new Error(data.message || "Failed to reset password")
   return data
 }

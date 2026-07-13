@@ -12,7 +12,9 @@ function CategoryCard({ name, icon: Icon, color, count }) {
         <Icon size={26} />
       </div>
       <p className="text-sm font-semibold text-gray-700 text-center">{name}</p>
-      <p className="text-xs text-gray-400">{count} items</p>
+      <p className="text-xs text-gray-400">
+        {count !== undefined ? `${count} item${count !== 1 ? "s" : ""}` : "..."}
+      </p>
     </div>
   )
 }

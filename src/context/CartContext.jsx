@@ -1,9 +1,24 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 
 const CartContext = createContext()
 
+// Load from localStorage on startup
+function loadCart() {
+  try {
+    const saved = localStorage.getItem("vendly_cart")
+    return saved ? JSON.parse(saved) : []
+  } catch {
+    return []
+  }
+}
+
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([])
+  const [cartItems, setCartItems] = useState(loadCart)
+
+  // ✅ Save to localStorage whenever cart changes
+  useEffect(() => {
+    localStorage.setItem("vendly_cart", JSON.stringify(cartItems))
+  }, [cartItems])
 
   function addToCart(product) {
     setCartItems((prev) => {

@@ -5,13 +5,13 @@ import { useAuth } from "../context/AuthContext"
 import { loginUser } from "../api/authApi"
 
 function LoginPage() {
-  const navigate  = useNavigate()
+  const navigate = useNavigate()
   const { login } = useAuth()
 
-  const [form, setForm]             = useState({ email: "", password: "" })
-  const [errors, setErrors]         = useState({})
+  const [form, setForm] = useState({ email: "", password: "" })
+  const [errors, setErrors] = useState({})
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading]       = useState(false)
+  const [loading, setLoading] = useState(false)
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -42,21 +42,33 @@ function LoginPage() {
     setLoading(true)
     try {
       const data = await loginUser({ email: form.email, password: form.password })
+
+      // ✅ If account needs verification redirect to OTP page
+      if (data.needsVerification) {
+        navigate("/verify-otp", { state: { email: data.email } })
+        return
+      }
+
       login({
-        name:   data.name,
-        email:  data.email,
-        phone:  data.phone,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        role: data.role,
         avatar: data.name.slice(0, 2).toUpperCase(),
-        token:  data.token,
+        token: data.token,
       })
       navigate("/")
     } catch (err) {
+      // ✅ Handle unverified from error response
+      if (err.message.includes("not verified")) {
+        navigate("/verify-otp", { state: { email: form.email } })
+        return
+      }
       setErrors({ email: err.message })
     } finally {
       setLoading(false)
     }
   }
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
@@ -65,7 +77,7 @@ function LoginPage() {
           {/* Logo */}
           <div className="text-center mb-8">
             <Link to="/" className="text-3xl font-extrabold text-dark">
-              Shop<span className="text-primary">Hub</span>
+              Vend<span className="text-primary">ly</span>
             </Link>
             <p className="text-gray-500 text-sm mt-2">Welcome back! Sign in to continue</p>
           </div>
@@ -95,9 +107,7 @@ function LoginPage() {
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-semibold text-gray-700">Password</label>
-                <button type="button" className="text-xs text-primary hover:underline">
-                  Forgot password?
-                </button>
+                <Link to="/forgot-password" className="text-xs text-primary hover:underline"> Forgot password? </Link>
               </div>
               <div className={`flex items-center border rounded-xl px-4 py-3 gap-2 transition
                 ${errors.password ? "border-red-400 bg-red-50" : "border-gray-200 focus-within:border-primary"}`}>
@@ -146,7 +156,7 @@ function LoginPage() {
 
           {/* Demo Login */}
           <button
-            onClick={() => setForm({ email: "demo@shophub.ng", password: "demo123" })}
+            onClick={() => setForm({ email: "demo@vendly.ng", password: "demo123" })}
             className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-3 text-sm font-semibold text-gray-700 hover:border-primary hover:text-primary transition"
           >
             <ShoppingBag size={17} />

@@ -43,7 +43,7 @@ function VendorCard({ vendor }) {
         <div className="flex items-center gap-4 text-xs text-gray-500 border-t border-gray-100 pt-3">
           <div className="flex items-center gap-1">
             <Package size={13} className="text-primary" />
-            <span><strong className="text-gray-700">{sales.toLocaleString()}</strong> sales</span>
+            <span><strong className="text-gray-700">{vendor.productCount || 0}</strong> products</span>
           </div>
           <div className="flex items-center gap-1">
             <Star size={13} className="text-primary" />
@@ -63,10 +63,10 @@ function VendorCard({ vendor }) {
 }
 
 function VendorsPage() {
-  const [search,  setSearch]  = useState("")
+  const [search, setSearch] = useState("")
   const [vendors, setVendors] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState(null)
+  const [error, setError] = useState(null)
 
   async function loadVendors() {
     try {
@@ -106,7 +106,7 @@ function VendorsPage() {
       </div>
 
       {loading && <LoadingSpinner message="Loading vendors..." />}
-      {error   && <ErrorMessage message={error} onRetry={loadVendors} />}
+      {error && <ErrorMessage message={error} onRetry={loadVendors} />}
 
       {!loading && !error && (
         vendors.length > 0 ? (

@@ -12,7 +12,7 @@ function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-4">
             <Link to="/" className="text-2xl font-bold text-white">
-              Shop<span className="text-primary">Hub</span>
+              Vend<span className="text-primary">ly</span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
               Nigeria's trusted multi-vendor marketplace. Shop from verified vendors across the country.
@@ -27,23 +27,23 @@ function Footer() {
 
           {/* Quick Links */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wide">Quick Links</h4>
-            <Link to="/"         className="text-sm hover:text-primary transition">Home</Link>
+            <Link to="/" className="text-sm hover:text-primary transition">Home</Link>
             <Link to="/products" className="text-sm hover:text-primary transition">Products</Link>
-            <Link to="/vendors"  className="text-sm hover:text-primary transition">Vendors</Link>
-            <Link to="/products?badge=Sale" className="text-sm hover:text-primary transition">Deals</Link>
-            <Link to="/register" className="text-sm hover:text-primary transition">Join Us</Link>
+            <Link to="/vendors" className="text-sm hover:text-primary transition">Vendors</Link>
+            <Link to="/about" className="text-sm hover:text-primary transition">About Us</Link>
+            <Link to="/faq" className="text-sm hover:text-primary transition">FAQ</Link>
+            <Link to="/become-vendor" className="text-sm hover:text-primary transition">Become a Vendor</Link>
           </div>
 
           {/* Categories */}
           <div className="flex flex-col gap-3">
             <h4 className="text-white font-semibold text-sm uppercase tracking-wide">Categories</h4>
             <Link to="/products?category=Electronics" className="text-sm hover:text-primary transition">Electronics</Link>
-            <Link to="/products?category=Fashion"     className="text-sm hover:text-primary transition">Fashion</Link>
-            <Link to="/products?category=Laptops"     className="text-sm hover:text-primary transition">Laptops</Link>
-            <Link to="/products?category=Audio"       className="text-sm hover:text-primary transition">Audio</Link>
-            <Link to="/products?category=Cameras"     className="text-sm hover:text-primary transition">Cameras</Link>
-            <Link to="/products?category=Fitness"     className="text-sm hover:text-primary transition">Fitness</Link>
+            <Link to="/products?category=Fashion" className="text-sm hover:text-primary transition">Fashion</Link>
+            <Link to="/products?category=Laptops" className="text-sm hover:text-primary transition">Laptops</Link>
+            <Link to="/products?category=Audio" className="text-sm hover:text-primary transition">Audio</Link>
+            <Link to="/products?category=Cameras" className="text-sm hover:text-primary transition">Cameras</Link>
+            <Link to="/products?category=Fitness" className="text-sm hover:text-primary transition">Fitness</Link>
           </div>
 
           {/* Contact */}
@@ -51,11 +51,11 @@ function Footer() {
             <h4 className="text-white font-semibold text-sm uppercase tracking-wide">Contact Us</h4>
             <div className="flex items-center gap-2 text-sm">
               <Mail size={15} className="text-primary" />
-              support@shophub.ng
+              noreply.vendly@gmail.com
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Phone size={15} className="text-primary" />
-              +234 800 SHOPHUB
+              +234 912 088 7991
             </div>
             <div className="flex items-center gap-2 text-sm">
               <MapPin size={15} className="text-primary" />
@@ -67,13 +67,15 @@ function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
-          <p>© 2026 ShopHub. All rights reserved.</p>
-          <div className="flex gap-4">
-            <span className="hover:text-primary transition cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-primary transition cursor-pointer">Terms of Service</span>
-            <span className="hover:text-primary transition cursor-pointer">Cookie Policy</span>
+          <p>© 2026 Vendly. All rights reserved.</p>
+          <div className="flex gap-4 flex-wrap justify-center">
+            <Link to="/privacy-policy" className="hover:text-primary transition cursor-pointer">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-primary transition cursor-pointer">Terms of Service</Link>
+            <Link to="/refund-policy" className="hover:text-primary transition cursor-pointer">Refund Policy</Link>
+            <Link to="/faq" className="hover:text-primary transition cursor-pointer">FAQ</Link>
           </div>
         </div>
+
 
       </div>
     </footer>

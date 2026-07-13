@@ -1,4 +1,4 @@
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Lock } from "lucide-react"
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Lock, Gift, Truck, PackageCheck } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useCart } from "../context/CartContext"
 
@@ -25,24 +25,29 @@ function CartPage() {
     )
   }
 
-  const delivery = 2500
-  const tax = Math.round(cartTotal * 0.075)
-  const grandTotal = cartTotal + delivery + tax
+  const delivery = cartTotal >= 50000 ? 0 : 2500
+  const grandTotal = cartTotal + delivery
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-3">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Your Cart</h1>
           <p className="text-gray-500 text-sm mt-1">{cartItems.length} item(s) in your cart</p>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={clearCart} className="text-sm text-red-500 hover:underline">
+          <button
+            onClick={clearCart}
+            className="text-sm text-red-500 hover:underline"
+          >
             Clear Cart
           </button>
-          <Link to="/products" className="flex items-center gap-2 text-sm text-primary hover:underline font-semibold">
+          <Link
+            to="/products"
+            className="flex items-center gap-2 text-sm text-primary hover:underline font-semibold"
+          >
             <ArrowLeft size={16} /> Continue Shopping
           </Link>
         </div>
@@ -107,6 +112,29 @@ function CartPage() {
           ))}
         </div>
 
+        {/* Free Delivery Banner */}
+        {cartTotal < 50000 && (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3">
+            <p className="text-xs text-blue-700 font-semibold flex items-center justify-center gap-2">
+              <Truck className="h-4 w-4" />
+              Add{" "}
+              <span className="text-primary font-bold">
+                {formatPrice(50000 - cartTotal)}
+              </span>
+              {" "}more to get FREE delivery!
+            </p>
+          </div>
+        )}
+
+        {cartTotal >= 50000 && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-3 mb-3">
+            <p className="text-xs text-green-700 font-semibold flex items-center justify-center gap-2">
+              <PackageCheck className="h-4 w-4" />
+              You qualify for FREE delivery!
+            </p>
+          </div>
+        )}
+
         {/* Order Summary */}
         <div className="lg:w-80">
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-24">
@@ -119,11 +147,20 @@ function CartPage() {
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Delivery Fee</span>
-                <span className="font-semibold">{formatPrice(delivery)}</span>
-              </div>
-              <div className="flex justify-between text-gray-600">
-                <span>Tax (7.5%)</span>
-                <span className="font-semibold">{formatPrice(tax)}</span>
+
+                <span
+                  className={`flex items-center gap-1 font-semibold ${delivery === 0 ? "text-green-500" : ""
+                    }`}
+                >
+                  {delivery === 0 ? (
+                    <>
+                      <Gift className="h-4 w-4" />
+                      FREE
+                    </>
+                  ) : (
+                    formatPrice(delivery)
+                  )}
+                </span>
               </div>
               <div className="border-t border-gray-200 pt-3 flex justify-between text-base font-bold text-gray-800">
                 <span>Total</span>

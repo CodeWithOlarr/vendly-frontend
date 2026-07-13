@@ -1,5 +1,7 @@
 import { ShoppingCart, Star, Heart } from "lucide-react"
 import { useCart } from "../context/CartContext"
+import { useWishlist } from "../context/WishlistContext"
+import { useToast } from "../context/ToastContext"
 import { Link } from "react-router-dom"
 
 function formatPrice(amount) {
@@ -17,12 +19,32 @@ function getBadgeStyle(badge) {
 }
 
 function ProductCard({ product }) {
-  const { addToCart } = useCart()
+  const { addToCart }                   = useCart()
+  const { toggleWishlist, isWishlisted } = useWishlist()
+  const { showToast }                   = useToast()
+
   const { name, price, oldPrice, rating, reviews, vendor, image, badge, inStock } = product
+
+  const wishlisted = isWishlisted(product._id)
 
   const discount = oldPrice
     ? Math.round(((oldPrice - price) / oldPrice) * 100)
     : null
+
+  function handleWishlist(e) {
+    e.preventDefault()
+    toggleWishlist(product)
+    showToast(
+      wishlisted ? "Removed from wishlist" : "Added to wishlist! ❤️",
+      "success"
+    )
+  }
+
+  function handleAddToCart(e) {
+    e.preventDefault()
+    addToCart(product)
+    showToast("Added to cart!", "success")
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition border border-gray-100 group overflow-hidden flex flex-col">
@@ -48,8 +70,15 @@ function ProductCard({ product }) {
             </span>
           )}
 
-          <button className="absolute bottom-3 right-3 bg-white p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition hover:text-red-500">
-            <Heart size={16} />
+          {/* Wishlist Button */}
+          <button
+            onClick={handleWishlist}
+            className="absolute bottom-3 right-3 bg-white p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition"
+          >
+            <Heart
+              size={16}
+              className={wishlisted ? "fill-red-500 text-red-500" : "text-gray-400"}
+            />
           </button>
 
           {!inStock && (
@@ -88,7 +117,7 @@ function ProductCard({ product }) {
 
         <button
           disabled={!inStock}
-          onClick={() => addToCart(product)}
+          onClick={handleAddToCart}
           className="mt-auto flex items-center justify-center gap-2 bg-dark text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-primary transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ShoppingCart size={16} />

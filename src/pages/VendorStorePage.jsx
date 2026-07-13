@@ -75,7 +75,7 @@ function VendorStorePage() {
           {[
             { icon: Star,     label: "Rating",  value: `${rating}/5`          },
             { icon: Package,  label: "Reviews", value: reviews                },
-            { icon: Package,  label: "Sales",   value: sales.toLocaleString() },
+            { icon: Package, label: "Products", value: vendor.productCount || 0 },
             { icon: Calendar, label: "Since",   value: joined                 },
           ].map(({ icon: Icon, label, value }) => (
             <div key={label} className="bg-gray-50 rounded-2xl p-4 text-center flex flex-col items-center gap-1">
