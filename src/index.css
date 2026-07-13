@@ -2,7 +2,7 @@
 
 @theme {
   --color-primary: #2563EB;
-  --color-dark: #1E3A5F;
+  --color-dark:    #1E3A5F;
 }
 
 @keyframes slide-up {
@@ -12,4 +12,18 @@
 
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
+}
+
+.hero-gradient {
+  background: #1E3A5F;
+  background: -webkit-linear-gradient(to right, #1E3A5F, #1e40af);
+  background: linear-gradient(to right, #1E3A5F, #1e40af);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style:  none;
+  scrollbar-width:     none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

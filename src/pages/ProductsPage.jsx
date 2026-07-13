@@ -8,24 +8,24 @@ import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
 const categories = ["All", "Phones", "Laptops", "Audio", "Fashion", "Cameras", "Watches", "Fitness", "Home & Living", "Electronics"]
 
 const sortOptions = [
-  { label: "Latest",             value: "latest"     },
-  { label: "Price: Low to High", value: "price_asc"  },
+  { label: "Latest", value: "latest" },
+  { label: "Price: Low to High", value: "price_asc" },
   { label: "Price: High to Low", value: "price_desc" },
-  { label: "Top Rated",          value: "rating"     },
-  { label: "Most Reviews",       value: "reviews"    },
+  { label: "Top Rated", value: "rating" },
+  { label: "Most Reviews", value: "reviews" },
 ]
 
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const search         = searchParams.get("search")   || ""
+  const search = searchParams.get("search") || ""
   const activeCategory = searchParams.get("category") || "All"
-  const sortBy         = searchParams.get("sort")     || "latest"
+  const sortBy = searchParams.get("sort") || "latest"
 
-  const [products,    setProducts]    = useState([])
-  const [loading,     setLoading]     = useState(true)
-  const [error,       setError]       = useState(null)
-  const [maxPrice,    setMaxPrice]    = useState(1500000)
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [maxPrice, setMaxPrice] = useState(1500000)
   const [inStockOnly, setInStockOnly] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
 
@@ -48,21 +48,21 @@ function ProductsPage() {
 
   function updateParams(changes) {
     const current = {
-      search:   searchParams.get("search")   || "",
+      search: searchParams.get("search") || "",
       category: searchParams.get("category") || "",
-      sort:     searchParams.get("sort")     || "",
+      sort: searchParams.get("sort") || "",
       ...changes,
     }
     const next = {}
-    if (current.search)                                  next.search   = current.search
+    if (current.search) next.search = current.search
     if (current.category && current.category !== "All") next.category = current.category
-    if (current.sort && current.sort !== "latest")      next.sort     = current.sort
+    if (current.sort && current.sort !== "latest") next.sort = current.sort
     setSearchParams(next, { replace: true })
   }
 
-  function setSearch(value)         { updateParams({ search:   value }) }
+  function setSearch(value) { updateParams({ search: value }) }
   function setActiveCategory(value) { updateParams({ category: value }) }
-  function setSortBy(value)         { updateParams({ sort:     value }) }
+  function setSortBy(value) { updateParams({ sort: value }) }
 
   function resetFilters() {
     setSearchParams({}, { replace: true })
@@ -108,17 +108,17 @@ function ProductsPage() {
           )}
         </div>
 
-        <div className="relative">
+        <div className="relative flex-shrink-0">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-2.5 pr-9 text-sm text-gray-700 shadow-sm outline-none cursor-pointer"
+            className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-2.5 pr-8 text-sm text-gray-700 shadow-sm outline-none cursor-pointer w-full"
           >
             {sortOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
-          <ChevronDown size={15} className="absolute right-3 top-3 text-gray-400 pointer-events-none" />
+          <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
         </div>
 
         <button
@@ -187,7 +187,7 @@ function ProductsPage() {
 
       {/* Products */}
       {loading && <LoadingSpinner message="Loading products..." />}
-      {error   && <ErrorMessage message={error} onRetry={loadProducts} />}
+      {error && <ErrorMessage message={error} onRetry={loadProducts} />}
 
       {!loading && !error && (
         filtered.length > 0 ? (

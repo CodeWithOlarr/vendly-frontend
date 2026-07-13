@@ -57,18 +57,18 @@ function TypingIndicator() {
 }
 
 function ChatWidget() {
-  const [isOpen,    setIsOpen]    = useState(false)
-  const [messages,  setMessages]  = useState([
+  const [isOpen, setIsOpen] = useState(false)
+  const [messages, setMessages] = useState([
     {
-      role:    "assistant",
+      role: "assistant",
       content: "Hi! 👋 I'm Vendly Assistant. I can help you find products, answer questions about orders, delivery and more. How can I help you today?",
     }
   ])
-  const [input,     setInput]     = useState("")
-  const [loading,   setLoading]   = useState(false)
-  const [unread,    setUnread]    = useState(0)
-  const messagesEndRef            = useRef(null)
-  const inputRef                  = useRef(null)
+  const [input, setInput] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [unread, setUnread] = useState(0)
+  const messagesEndRef = useRef(null)
+  const inputRef = useRef(null)
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -105,7 +105,7 @@ function ChatWidget() {
       if (!isOpen) setUnread((prev) => prev + 1)
     } catch (err) {
       setMessages((prev) => [...prev, {
-        role:    "assistant",
+        role: "assistant",
         content: "Sorry, I'm having trouble right now. Please try again or contact support@vendly.ng 🙏",
       }])
     } finally {
@@ -128,14 +128,14 @@ function ChatWidget() {
   return (
     <>
       {/* Chat Window */}
-      <div className={`fixed bottom-24 right-6 z-50 w-80 sm:w-96 transition-all duration-300 ease-in-out
+      <div className={`fixed bottom-24 right-2 left-2 sm:left-auto sm:right-6 z-50 sm:w-96 transition-all duration-300 ease-in-out
         ${isOpen
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-4 pointer-events-none"
         }`}
       >
         <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col"
-          style={{ height: "520px" }}
+          style={{ height: "min(520px, 80vh)" }}
         >
 
           {/* Header */}

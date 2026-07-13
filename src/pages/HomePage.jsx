@@ -36,7 +36,7 @@ function HomePage() {
     <main>
 
       {/* HERO */}
-      <section className="bg-gradient-to-r from-dark to-gray-800 text-white px-6 py-16 md:py-24">
+      <section className="hero-gradient text-white px-6 py-16 md:py-24">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
 
           <div className="flex-1 flex flex-col gap-5">
@@ -101,15 +101,16 @@ function HomePage() {
             View All <ArrowRight size={16} />
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
+        <div className="flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-4 lg:grid-cols-8 md:gap-4 scrollbar-hide">
           {categories.map((category) => (
-            <CategoryCard
-              key={category.id}
-              name={category.name}
-              icon={category.icon}
-              color={category.color}
-              count={categoryCounts[category.name]}
-            />
+            <div key={category.id} className="flex-shrink-0 w-32 md:w-auto">
+              <CategoryCard
+                name={category.name}
+                icon={category.icon}
+                color={category.color}
+                count={categoryCounts[category.name]}
+              />
+            </div>
           ))}
         </div>
       </section>
