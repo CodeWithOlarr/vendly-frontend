@@ -29,7 +29,7 @@ import ProfilePage from "./pages/ProfilePage"
 import ChatWidget from "./components/ChatWidget"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage"
 import TermsPage from "./pages/TermsPage"
-import PrivacyPolicyPage from "./pages/PrivacyPolicy"
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
 import RefundPolicyPage from "./pages/RefundPolicyPage"
 import FAQPage from "./pages/FAQPage"
 import AboutPage from "./pages/AboutPage"
@@ -118,7 +118,7 @@ function App() {
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/terms" element={<TermsPage />} />
-              <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/refund-policy" element={<RefundPolicyPage />} />
               <Route path="/faq" element={<FAQPage />} />
             </Routes>
