@@ -4,10 +4,10 @@ import {
   ShoppingCart, Heart, Star, Truck,
   ShieldCheck, RefreshCw, Minus, Plus, Share2
 } from "lucide-react"
-import { useCart }     from "../context/CartContext"
-import { useAuth }     from "../context/AuthContext"
+import { useCart } from "../context/CartContext"
+import { useAuth } from "../context/AuthContext"
 import { useWishlist } from "../context/WishlistContext"
-import { useToast }    from "../context/ToastContext"
+import { useToast } from "../context/ToastContext"
 import { fetchProductById, fetchProducts, fetchReviews, submitReview } from "../api/productApi"
 import ProductCard from "../components/ProductCard"
 import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
@@ -17,26 +17,26 @@ function formatPrice(amount) {
 }
 
 function ProductDetailPage() {
-  const { id }                            = useParams()
-  const { addToCart }                     = useCart()
-  const { isLoggedIn, getToken }          = useAuth()
-  const { toggleWishlist, isWishlisted }  = useWishlist()
-  const { showToast }                     = useToast()
+  const { id } = useParams()
+  const { addToCart } = useCart()
+  const { isLoggedIn, getToken } = useAuth()
+  const { toggleWishlist, isWishlisted } = useWishlist()
+  const { showToast } = useToast()
 
-  const [product,      setProduct]      = useState(null)
-  const [related,      setRelated]      = useState([])
-  const [loading,      setLoading]      = useState(true)
-  const [error,        setError]        = useState(null)
-  const [quantity,     setQuantity]     = useState(1)
-  const [activeTab,    setActiveTab]    = useState("description")
-  const [added,        setAdded]        = useState(false)
+  const [product, setProduct] = useState(null)
+  const [related, setRelated] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [quantity, setQuantity] = useState(1)
+  const [activeTab, setActiveTab] = useState("description")
+  const [added, setAdded] = useState(false)
 
   // ✅ Reviews state — named reviewsList to avoid conflict with product.reviews count
-  const [reviewsList,   setReviewsList]   = useState([])
-  const [userRating,    setUserRating]    = useState(0)
-  const [userComment,   setUserComment]   = useState("")
-  const [submitting,    setSubmitting]    = useState(false)
-  const [hoverRating,   setHoverRating]   = useState(0)
+  const [reviewsList, setReviewsList] = useState([])
+  const [userRating, setUserRating] = useState(0)
+  const [userComment, setUserComment] = useState("")
+  const [submitting, setSubmitting] = useState(false)
+  const [hoverRating, setHoverRating] = useState(0)
 
   const wishlisted = isWishlisted(product?._id)
 
@@ -44,9 +44,9 @@ function ProductDetailPage() {
     try {
       setLoading(true)
       setError(null)
-      const data        = await fetchProductById(id)
+      const data = await fetchProductById(id)
       setProduct(data)
-      const all         = await fetchProducts({ category: data.category })
+      const all = await fetchProducts({ category: data.category })
       setRelated(all.filter((p) => p._id !== data._id).slice(0, 4))
       const reviewsData = await fetchReviews(id)
       setReviewsList(reviewsData)
@@ -98,7 +98,7 @@ function ProductDetailPage() {
   }
 
   if (loading) return <LoadingSpinner message="Loading product..." />
-  if (error)   return <ErrorMessage message={error} onRetry={loadProduct} />
+  if (error) return <ErrorMessage message={error} onRetry={loadProduct} />
   if (!product) return null
 
   // ✅ Renamed product.reviews to reviewCount to avoid conflict with reviewsList state
@@ -165,7 +165,7 @@ function ProductDetailPage() {
           {/* Rating */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1">
-              {[1,2,3,4,5].map((star) => (
+              {[1, 2, 3, 4, 5].map((star) => (
                 <Star key={star} size={16}
                   className={star <= Math.round(rating)
                     ? "text-yellow-400 fill-yellow-400"
@@ -178,14 +178,14 @@ function ProductDetailPage() {
           </div>
 
           {/* Price */}
-          <div className="flex items-center gap-3">
-            <span className="text-3xl font-extrabold text-gray-900">{formatPrice(price)}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-gray-900">{formatPrice(price)}</span>
             {oldPrice && (
-              <span className="text-lg text-gray-400 line-through">{formatPrice(oldPrice)}</span>
+              <span className="text-base text-gray-400 line-through">{formatPrice(oldPrice)}</span>
             )}
             {discount && (
-              <span className="text-green-600 font-bold text-sm">
-                You save {formatPrice(oldPrice - price)}
+              <span className="text-green-600 font-bold text-xs sm:text-sm bg-green-50 px-2 py-0.5 rounded-full">
+                Save {formatPrice(oldPrice - price)}
               </span>
             )}
           </div>
@@ -256,9 +256,9 @@ function ProductDetailPage() {
           {/* Trust Badges */}
           <div className="grid grid-cols-3 gap-3 mt-2">
             {[
-              { icon: Truck,       color: "bg-green-50 text-green-600",   title: "Fast Delivery",   sub: "Nationwide"    },
-              { icon: ShieldCheck, color: "bg-blue-50 text-blue-600",     title: "Verified Seller", sub: "100% trusted"  },
-              { icon: RefreshCw,   color: "bg-orange-50 text-orange-600", title: "Easy Returns",    sub: "7-day policy"  },
+              { icon: Truck, color: "bg-green-50 text-green-600", title: "Fast Delivery", sub: "Nationwide" },
+              { icon: ShieldCheck, color: "bg-blue-50 text-blue-600", title: "Verified Seller", sub: "100% trusted" },
+              { icon: RefreshCw, color: "bg-orange-50 text-orange-600", title: "Easy Returns", sub: "7-day policy" },
             ].map(({ icon: Icon, color, title, sub }) => (
               <div key={title} className="flex flex-col items-center gap-1 bg-gray-50 rounded-xl p-3 text-center">
                 <Icon size={20} className="text-primary" />
@@ -313,12 +313,12 @@ function ProductDetailPage() {
             <table className="w-full text-sm">
               <tbody>
                 {[
-                  ["Category",     category],
-                  ["Vendor",       vendor],
+                  ["Category", category],
+                  ["Vendor", vendor],
                   ["Availability", inStock ? "In Stock" : "Out of Stock"],
-                  ["Rating",       `${rating} / 5`],
-                  ["Reviews",      reviewsList.length],
-                  ["Price",        formatPrice(price)],
+                  ["Rating", `${rating} / 5`],
+                  ["Reviews", reviewsList.length],
+                  ["Price", formatPrice(price)],
                 ].map(([label, value]) => (
                   <tr key={label} className="border-b border-gray-100">
                     <td className="py-3 pr-6 font-semibold text-gray-700 w-40">{label}</td>
@@ -339,7 +339,7 @@ function ProductDetailPage() {
               <div className="text-center">
                 <p className="text-5xl font-extrabold text-gray-800">{rating}</p>
                 <div className="flex items-center gap-0.5 justify-center mt-1">
-                  {[1,2,3,4,5].map((star) => (
+                  {[1, 2, 3, 4, 5].map((star) => (
                     <Star key={star} size={14}
                       className={star <= Math.round(rating)
                         ? "text-yellow-400 fill-yellow-400"
@@ -350,9 +350,9 @@ function ProductDetailPage() {
                 <p className="text-xs text-gray-400 mt-1">{reviewsList.length} reviews</p>
               </div>
               <div className="flex-1 flex flex-col gap-1.5">
-                {[5,4,3,2,1].map((star) => {
+                {[5, 4, 3, 2, 1].map((star) => {
                   const count = reviewsList.filter((r) => r.rating === star).length
-                  const pct   = reviewsList.length
+                  const pct = reviewsList.length
                     ? Math.round((count / reviewsList.length) * 100)
                     : 0
                   return (
@@ -382,7 +382,7 @@ function ProductDetailPage() {
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-2">Your Rating</p>
                     <div className="flex gap-1 items-center">
-                      {[1,2,3,4,5].map((star) => (
+                      {[1, 2, 3, 4, 5].map((star) => (
                         <button
                           key={star}
                           type="button"
@@ -402,7 +402,7 @@ function ProductDetailPage() {
                       ))}
                       {userRating > 0 && (
                         <span className="text-sm text-gray-500 ml-2">
-                          {["","Poor","Fair","Good","Very Good","Excellent"][userRating]}
+                          {["", "Poor", "Fair", "Good", "Very Good", "Excellent"][userRating]}
                         </span>
                       )}
                     </div>
@@ -470,7 +470,7 @@ function ProductDetailPage() {
                         <span className="font-semibold text-sm text-gray-800">{review.name}</span>
                       </div>
                       <div className="flex items-center gap-0.5">
-                        {[1,2,3,4,5].map((star) => (
+                        {[1, 2, 3, 4, 5].map((star) => (
                           <Star key={star} size={12}
                             className={star <= review.rating
                               ? "text-yellow-400 fill-yellow-400"

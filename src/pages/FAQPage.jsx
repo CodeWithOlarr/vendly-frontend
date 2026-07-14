@@ -132,16 +132,20 @@ function FAQItem({ question, answer }) {
     <div className="border border-gray-100 rounded-xl overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left bg-white hover:bg-gray-50 transition"
+        className="w-full flex items-start justify-between px-4 py-4 sm:px-5 text-left bg-white hover:bg-gray-50 transition"
       >
-        <span className="text-sm font-semibold text-gray-800 pr-4">{question}</span>
+        {/* items-start so icon stays top-aligned when question wraps */}
+        <span className="text-sm font-semibold text-gray-800 pr-3 leading-snug">
+          {question}
+        </span>
         {open
-          ? <ChevronUp size={18} className="text-primary flex-shrink-0" />
-          : <ChevronDown size={18} className="text-gray-400 flex-shrink-0" />
+          ? <ChevronUp size={18} className="text-primary flex-shrink-0 mt-0.5" />
+          : <ChevronDown size={18} className="text-gray-400 flex-shrink-0 mt-0.5" />
         }
       </button>
+
       {open && (
-        <div className="px-5 pb-4 bg-white">
+        <div className="px-4 pb-4 sm:px-5 bg-white">
           <p className="text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-3">
             {answer}
           </p>
@@ -157,11 +161,11 @@ function FAQPage() {
   const current = faqs.find((f) => f.category === activeCategory)
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
-      {/* Header */}
-      <div className="text-center mb-10">
-        <h1 className="text-3xl font-extrabold text-gray-800">
+      {/* ── Header ── */}
+      <div className="text-center mb-8 sm:mb-10">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 leading-tight">
           Frequently Asked Questions
         </h1>
         <p className="text-gray-500 text-sm mt-2">
@@ -169,31 +173,57 @@ function FAQPage() {
         </p>
       </div>
 
+      {/* ── Body ── */}
       <div className="flex flex-col md:flex-row gap-6">
 
-        {/* Category Sidebar */}
-        <div className="md:w-48 flex flex-row md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0">
+        {/* ── Category nav ──
+            Mobile / tablet : horizontal pill strip with snap scrolling
+            Desktop         : vertical sidebar column
+        ── */}
+        <nav
+          aria-label="FAQ categories"
+          className="
+            flex flex-row md:flex-col
+            gap-2
+            overflow-x-auto md:overflow-x-visible
+            pb-1 md:pb-0
+            snap-x md:snap-none
+            scroll-smooth
+            -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0
+            md:w-52 md:flex-shrink-0
+            scrollbar-hide
+          "
+        >
           {faqs.map(({ category, icon: Icon }) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition whitespace-nowrap w-full
+              className={`
+                flex items-center gap-2
+                px-3 py-2.5 sm:px-4
+                rounded-xl text-sm font-semibold
+                transition
+                whitespace-nowrap
+                snap-start
+                flex-shrink-0 md:flex-shrink md:w-full
                 ${activeCategory === category
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-white shadow-sm"
                   : "bg-white text-gray-600 border border-gray-100 hover:border-primary hover:text-primary"
-                }`}
+                }
+              `}
             >
-              <Icon size={16} />
-              {category}
+              <Icon size={15} className="flex-shrink-0" />
+              <span>{category}</span>
             </button>
           ))}
-        </div>
+        </nav>
 
-        {/* Questions */}
-        <div className="flex-1 flex flex-col gap-3">
-          <h2 className="font-bold text-gray-800 text-lg mb-2">
+        {/* ── Questions panel ── */}
+        <div className="flex-1 min-w-0 flex flex-col gap-3">
+          <h2 className="font-bold text-gray-800 text-base sm:text-lg mb-1">
             {activeCategory}
           </h2>
+
           {current?.questions.map(({ q, a }) => (
             <FAQItem key={q} question={q} answer={a} />
           ))}
@@ -201,11 +231,13 @@ function FAQPage() {
 
       </div>
 
-      {/* Still have questions */}
-      <div className="mt-10 bg-gray-50 rounded-2xl p-6 text-center">
-        <h3 className="font-bold text-gray-800 mb-2">Still have questions?</h3>
+      {/* ── Still have questions ── */}
+      <div className="mt-8 sm:mt-10 bg-gray-50 rounded-2xl p-5 sm:p-6 text-center">
+        <h3 className="font-bold text-gray-800 mb-1 sm:mb-2">
+          Still have questions?
+        </h3>
         <p className="text-gray-500 text-sm mb-4">
-          Our support team is available Monday to Friday, 8am to 6pm WAT
+          Our support team is available Monday to Friday, 8am – 6pm WAT
         </p>
         <Link
           to="mailto:noreply.vendly@gmail.com"
