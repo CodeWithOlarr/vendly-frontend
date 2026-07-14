@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { ChevronDown, ChevronUp, ShoppingBag, Truck, CreditCard, RefreshCw, Store, User } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -129,119 +129,146 @@ function FAQItem({ question, answer }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="border border-gray-100 rounded-xl overflow-hidden">
+    <div className="w-full border border-gray-100 rounded-xl overflow-hidden bg-white transition-all duration-200">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-start justify-between px-4 py-4 sm:px-5 text-left bg-white hover:bg-gray-50 transition"
+        className="w-full flex items-start justify-between px-4 py-4 text-left bg-white hover:bg-gray-50 transition gap-2"
       >
-        {/* items-start so icon stays top-aligned when question wraps */}
-        <span className="text-sm font-semibold text-gray-800 pr-3 leading-snug">
+        <span className="text-sm font-semibold text-gray-800 leading-snug break-words">
           {question}
         </span>
-        {open
-          ? <ChevronUp size={18} className="text-primary flex-shrink-0 mt-0.5" />
-          : <ChevronDown size={18} className="text-gray-400 flex-shrink-0 mt-0.5" />
-        }
+        <div className="flex-shrink-0 mt-0.5">
+          {open ? (
+            <ChevronUp size={18} className="text-primary" />
+          ) : (
+            <ChevronDown size={18} className="text-gray-400" />
+          )}
+        </div>
       </button>
 
-      {open && (
-        <div className="px-4 pb-4 sm:px-5 bg-white">
-          <p className="text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-3">
-            {answer}
-          </p>
+      <div
+        className={`grid transition-all duration-300 ease-in-out ${
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="px-4 pb-4 bg-white">
+            <p className="text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-3 break-words">
+              {answer}
+            </p>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }
 
 function FAQPage() {
   const [activeCategory, setActiveCategory] = useState("Shopping")
+  const activeBtnRef = useRef(null)
 
   const current = faqs.find((f) => f.category === activeCategory)
 
+  useEffect(() => {
+    if (activeBtnRef.current) {
+      activeBtnRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center"
+      })
+    }
+  }, [activeCategory])
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+    <div className="w-full max-w-4xl mx-auto px-4 py-6 sm:py-10 box-border overflow-hidden">
 
       {/* ── Header ── */}
-      <div className="text-center mb-8 sm:mb-10">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 leading-tight">
+      <div className="text-center mb-6 sm:mb-10 px-2">
+        <h1 className="text-xl sm:text-3xl font-extrabold text-gray-800 leading-tight break-words">
           Frequently Asked Questions
         </h1>
-        <p className="text-gray-500 text-sm mt-2">
+        <p className="text-gray-500 text-xs sm:text-sm mt-2">
           Find answers to common questions about Vendly
         </p>
       </div>
 
       {/* ── Body ── */}
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-6 w-full">
 
-        {/* ── Category nav ──
-            Mobile / tablet : horizontal pill strip with snap scrolling
-            Desktop         : vertical sidebar column
-        ── */}
-        <nav
-          aria-label="FAQ categories"
-          className="
-            flex flex-row md:flex-col
-            gap-2
-            overflow-x-auto md:overflow-x-visible
-            pb-1 md:pb-0
-            snap-x md:snap-none
-            scroll-smooth
-            -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0
-            md:w-52 md:flex-shrink-0
-            scrollbar-hide
-          "
-        >
-          {faqs.map(({ category, icon: Icon }) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`
-                flex items-center gap-2
-                px-3 py-2.5 sm:px-4
-                rounded-xl text-sm font-semibold
-                transition
-                whitespace-nowrap
-                snap-start
-                flex-shrink-0 md:flex-shrink md:w-full
-                ${activeCategory === category
-                  ? "bg-primary text-white shadow-sm"
-                  : "bg-white text-gray-600 border border-gray-100 hover:border-primary hover:text-primary"
-                }
-              `}
-            >
-              <Icon size={15} className="flex-shrink-0" />
-              <span>{category}</span>
-            </button>
-          ))}
-        </nav>
+        {/* ── Category nav ── */}
+        <div className="w-full md:w-52 md:flex-shrink-0 overflow-hidden">
+          <nav
+            aria-label="FAQ categories"
+            className="
+              flex flex-row md:flex-col
+              gap-2
+              overflow-x-auto md:overflow-x-visible
+              pb-3 md:pb-0
+              snap-x md:snap-none
+              scroll-smooth
+              scrollbar-none
+              w-full
+            "
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+          >
+            {faqs.map(({ category, icon: Icon }) => {
+              const isActive = activeCategory === category
+              return (
+                <button
+                  key={category}
+                  ref={isActive ? activeBtnRef : null}
+                  onClick={() => setActiveCategory(category)}
+                  className={`
+                    flex items-center gap-2
+                    px-3 py-2.5
+                    rounded-xl text-xs sm:text-sm font-semibold
+                    transition duration-200
+                    whitespace-nowrap
+                    snap-center
+                    flex-shrink-0 md:flex-shrink md:w-full
+                    ${isActive
+                      ? "bg-primary text-white shadow-sm"
+                      : "bg-white text-gray-600 border border-gray-100 hover:border-primary/40 hover:text-primary"
+                    }
+                  `}
+                >
+                  <Icon size={15} className="flex-shrink-0" />
+                  <span>{category}</span>
+                </button>
+              )
+            })}
+          </nav>
+        </div>
 
         {/* ── Questions panel ── */}
-        <div className="flex-1 min-w-0 flex flex-col gap-3">
-          <h2 className="font-bold text-gray-800 text-base sm:text-lg mb-1">
+        <div className="flex-1 min-w-0 flex flex-col gap-3 w-full">
+          <h2 className="font-bold text-gray-800 text-base sm:text-lg px-1">
             {activeCategory}
           </h2>
 
-          {current?.questions.map(({ q, a }) => (
-            <FAQItem key={q} question={q} answer={a} />
-          ))}
+          <div className="flex flex-col gap-3 w-full">
+            {current?.questions.map(({ q, a }) => (
+              <FAQItem key={q} question={q} answer={a} />
+            ))}
+          </div>
         </div>
 
       </div>
 
       {/* ── Still have questions ── */}
-      <div className="mt-8 sm:mt-10 bg-gray-50 rounded-2xl p-5 sm:p-6 text-center">
-        <h3 className="font-bold text-gray-800 mb-1 sm:mb-2">
+      <div className="mt-8 sm:mt-10 bg-gray-50 rounded-2xl p-5 sm:p-6 text-center w-full box-border">
+        <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-1 sm:mb-2">
           Still have questions?
         </h3>
-        <p className="text-gray-500 text-sm mb-4">
+        <p className="text-gray-500 text-xs sm:text-sm mb-4 max-w-md mx-auto">
           Our support team is available Monday to Friday, 8am – 6pm WAT
         </p>
         <Link
           to="mailto:noreply.vendly@gmail.com"
-          className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition inline-block"
+          className="bg-primary text-white px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:opacity-90 transition inline-block"
         >
           Contact Support
         </Link>
