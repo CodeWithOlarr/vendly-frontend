@@ -33,6 +33,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
 import RefundPolicyPage from "./pages/RefundPolicyPage"
 import FAQPage from "./pages/FAQPage"
 import AboutPage from "./pages/AboutPage"
+import ScrollToTop from "./components/ScrollToTop"
 import CookieConsent from "./components/CookieConsent"
 import { useAuth } from "./context/AuthContext"
 import { Loader } from "lucide-react"
@@ -52,6 +53,7 @@ function App() {
   }
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <Routes>
 
         {/* ===== ADMIN ROUTES — no Navbar/Footer ===== */}
