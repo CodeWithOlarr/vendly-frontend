@@ -11,7 +11,7 @@ import { useToast } from "../context/ToastContext"
 import { fetchProductById, fetchProducts, fetchReviews, submitReview } from "../api/productApi"
 import ProductCard from "../components/ProductCard"
 import { ProductDetailSkeleton } from "../components/Skeleton"
-import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
+import { ErrorMessage } from "../components/StatusMessage"
 
 function formatPrice(amount) {
   return "₦" + amount.toLocaleString("en-NG")
@@ -45,12 +45,23 @@ function ProductDetailPage() {
     try {
       setLoading(true)
       setError(null)
-      const data = await fetchProductById(id)
+
+      // Fetch product and reviews in parallel
+      const [data, reviewsData] = await Promise.all([
+        fetchProductById(id),
+        fetchReviews(id),
+      ])
+
       setProduct(data)
-      const all = await fetchProducts({ category: data.category })
-      setRelated(all.filter((p) => p._id !== data._id).slice(0, 4))
-      const reviewsData = await fetchReviews(id)
       setReviewsList(reviewsData)
+
+      // Fetch related separately after product loads
+      const related = await fetchProducts({
+        category: data.category,
+      })
+      setRelated(
+        related.filter((p) => p._id !== data._id).slice(0, 4)
+      )
     } catch (err) {
       setError(err.message)
     } finally {
