@@ -1,9 +1,18 @@
-import { AlertCircle, Loader } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 
 export function LoadingSpinner({ message = "Loading..." }) {
+  // Keep this as fallback but we'll use skeletons instead
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-3">
-      <Loader size={36} className="text-primary animate-spin" />
+      <div className="flex gap-1">
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce"
+            style={{ animationDelay: `${i * 150}ms` }}
+          />
+        ))}
+      </div>
       <p className="text-gray-500 text-sm">{message}</p>
     </div>
   )

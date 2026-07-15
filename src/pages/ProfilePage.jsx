@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext"
 import { useToast } from "../context/ToastContext"
 import { updateProfile, changePassword } from "../api/authApi"
 import { fetchMyOrders } from "../api/orderApi"
+import { OrderRowSkeleton, ProfileSkeleton } from "../components/Skeleton"
 import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
 
 function formatPrice(amount) {
@@ -43,11 +44,21 @@ function OrderStatusBadge({ isPaid, isDelivered }) {
 }
 
 // ===== PROFILE INFO TAB =====
-function ProfileTab({ user, getToken, onUserUpdate }) {
+// Added `loading` to props to render the ProfileSkeleton when data is fetching
+function ProfileTab({ user, getToken, onUserUpdate, loading }) {
     const { showToast } = useToast()
     const [editing, setEditing] = useState(false)
-    const [form, setForm] = useState({ name: user.name, phone: user.phone || "" })
+    const [form, setForm] = useState({ name: user?.name || "", phone: user?.phone || "" })
     const [saving, setSaving] = useState(false)
+
+    // Sync form state when user changes (e.g. after loading completes)
+    useEffect(() => {
+        if (user) {
+            setForm({ name: user.name, phone: user.phone || "" })
+        }
+    }, [user])
+
+    if (loading) return <ProfileSkeleton />
 
     async function handleSave() {
         setSaving(true)
@@ -168,8 +179,7 @@ function ProfileTab({ user, getToken, onUserUpdate }) {
     )
 }
 
-// ===== PASSWORD TAB =====
-// ✅ PasswordField is now OUTSIDE PasswordTab at top level
+// ===== PASSWORD FIELD =====
 function PasswordField({ label, field, form, setForm, show, setShow }) {
     const fieldKey = field === "current"
         ? "currentPassword"
@@ -306,7 +316,11 @@ function OrdersTab({ getToken }) {
 
     useEffect(() => { loadOrders() }, [])
 
-    if (loading) return <LoadingSpinner message="Loading orders..." />
+    if (loading) return (
+        <div className="flex flex-col gap-4">
+            {[...Array(3)].map((_, i) => <OrderRowSkeleton key={i} />)}
+        </div>
+    )
     if (error) return <ErrorMessage message={error} onRetry={loadOrders} />
 
     if (orders.length === 0) {
@@ -512,7 +526,14 @@ function ProfilePage() {
 
                 {/* Tab Content */}
                 <div className="flex-1 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    {activeTab === "profile" && <ProfileTab user={user} getToken={getToken} onUserUpdate={handleUserUpdate} />}
+                    {activeTab === "profile" && (
+                        <ProfileTab 
+                            user={user} 
+                            getToken={getToken} 
+                            onUserUpdate={handleUserUpdate} 
+                            loading={!user} // Show loading skeleton if user data isn't loaded yet
+                        />
+                    )}
                     {activeTab === "orders" && <OrdersTab getToken={getToken} />}
                     {activeTab === "password" && <PasswordTab getToken={getToken} />}
                 </div>

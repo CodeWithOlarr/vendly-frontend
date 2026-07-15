@@ -3,8 +3,9 @@ import { ArrowRight, Tag, Truck, ShieldCheck, RefreshCw } from "lucide-react"
 import { Link } from "react-router-dom"
 import CategoryCard from "../components/CategoryCard"
 import ProductCard from "../components/ProductCard"
-import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
-import { fetchProducts, fetchCategoryCounts, fetchFeaturedProducts } from "../api/productApi"
+import { ErrorMessage } from "../components/StatusMessage"
+import { fetchCategoryCounts, fetchFeaturedProducts } from "../api/productApi"
+import { ProductCardSkeleton, CategoryCardSkeleton } from "../components/Skeleton"
 import categories from "../data/categories"
 
 function HomePage() {
@@ -101,17 +102,20 @@ function HomePage() {
             View All <ArrowRight size={16} />
           </Link>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-4 lg:grid-cols-8 md:gap-4 scrollbar-hide">
-          {categories.map((category) => (
-            <div key={category.id} className="flex-shrink-0 w-32 md:w-auto">
-              <CategoryCard
-                name={category.name}
-                icon={category.icon}
-                color={category.color}
-                count={categoryCounts[category.name]}
-              />
-            </div>
-          ))}
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          {loading
+            ? [...Array(8)].map((_, i) => <CategoryCardSkeleton key={i} />)
+            : categories.map((category) => (
+                <CategoryCard
+                  key={category.id}
+                  name={category.name}
+                  icon={category.icon}
+                  color={category.color}
+                  count={categoryCounts[category.name]}
+                />
+              ))
+          }
         </div>
       </section>
 
@@ -128,21 +132,22 @@ function HomePage() {
             </Link>
           </div>
 
-          {loading && <LoadingSpinner message="Loading products..." />}
-          {error && <ErrorMessage message={error} onRetry={loadData} />}
-
-          {!loading && !error && (
-            products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product._id} product={product} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-400">
-                <p className="text-sm">No featured products yet. Check back soon!</p>
-              </div>
-            )
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => <ProductCardSkeleton key={i} />)}
+            </div>
+          ) : error ? (
+            <ErrorMessage message={error} onRetry={loadData} />
+          ) : products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-400">
+              <p className="text-sm">No featured products yet. Check back soon!</p>
+            </div>
           )}
         </div>
       </section>

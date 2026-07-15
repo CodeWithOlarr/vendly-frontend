@@ -8,8 +8,9 @@ import {
   adminUpdateProduct,
   adminDeleteProduct,
 } from "../../api/adminApi"
+import { TableRowSkeleton } from "../../components/Skeleton"
 import ImageUpload from "../../components/ImageUpload"
-import { LoadingSpinner, ErrorMessage } from "../../components/StatusMessage"
+import { ErrorMessage } from "../../components/StatusMessage"
 
 const EMPTY_FORM = {
   name: "", price: "", oldPrice: "", category: "Phones",
@@ -112,7 +113,34 @@ function AdminProducts() {
     p.category.toLowerCase().includes(search.toLowerCase())
   )
 
-  if (loading) return <LoadingSpinner message="Loading products..." />
+  if (loading) return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+          <div className="bg-gray-200 animate-pulse h-6 w-32 rounded-xl" />
+          <div className="bg-gray-200 animate-pulse h-4 w-24 rounded-xl" />
+        </div>
+        <div className="bg-gray-200 animate-pulse h-10 w-32 rounded-xl" />
+      </div>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50">
+            <tr>
+              {["Product", "Category", "Price", "Stock", "Actions"].map((h) => (
+                <th key={h} className="px-6 py-3 text-left">
+                  <div className="bg-gray-200 animate-pulse h-3 w-16 rounded" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {[...Array(6)].map((_, i) => <TableRowSkeleton key={i} cols={5} />)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+
   if (error) return <ErrorMessage message={error} onRetry={loadProducts} />
 
   return (

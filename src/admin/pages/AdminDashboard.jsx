@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Package, ShoppingBag, Users, TrendingUp, Store } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { adminGetStats } from "../../api/adminApi"
+import { StatsSkeleton } from "../../components/Skeleton"
 import { LoadingSpinner, ErrorMessage } from "../../components/StatusMessage"
 
 function formatPrice(amount) {
@@ -43,7 +44,7 @@ function AdminDashboard() {
 
   useEffect(() => { loadStats() }, [])
 
-  if (loading) return <LoadingSpinner message="Loading dashboard..." />
+  if (loading) return <StatsSkeleton />
   if (error)   return <ErrorMessage message={error} onRetry={loadStats} />
 
   return (

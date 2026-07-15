@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom"
 import { Search, SlidersHorizontal, X, ChevronDown } from "lucide-react"
 import ProductCard from "../components/ProductCard"
 import { fetchProducts } from "../api/productApi"
+import { ProductCardSkeleton } from "../components/Skeleton"
 import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
 
 const categories = ["All", "Phones", "Laptops", "Audio", "Fashion", "Cameras", "Watches", "Fitness", "Home & Living", "Electronics"]
@@ -186,29 +187,30 @@ function ProductsPage() {
       </div>
 
       {/* Products */}
-      {loading && <LoadingSpinner message="Loading products..." />}
-      {error && <ErrorMessage message={error} onRetry={loadProducts} />}
-
-      {!loading && !error && (
-        filtered.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filtered.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4 py-20 text-center">
-            <Search size={52} className="text-gray-300" />
-            <h3 className="text-xl font-bold text-gray-600">No products found</h3>
-            <p className="text-gray-400 text-sm">Try adjusting your search or filters</p>
-            <button
-              onClick={resetFilters}
-              className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => <ProductCardSkeleton key={i} />)}
+        </div>
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={loadProducts} />
+      ) : filtered.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filtered.map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-4 py-20 text-center">
+          <Search size={52} className="text-gray-300" />
+          <h3 className="text-xl font-bold text-gray-600">No products found</h3>
+          <p className="text-gray-400 text-sm">Try adjusting your search or filters</p>
+          <button
+            onClick={resetFilters}
+            className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition"
+          >
+            Clear Filters
+          </button>
+        </div>
       )}
 
     </div>

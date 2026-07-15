@@ -43,17 +43,42 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center gap-3">
-          <Loader size={36} className="text-primary animate-spin" />
-          <p className="text-gray-500 text-sm font-medium">Loading Vendly...</p>
+      <div className="min-h-screen bg-gray-50">
+        {/* Skeleton Navbar */}
+        <div className="bg-dark px-6 py-4 flex items-center justify-between">
+          <div className="bg-gray-600 animate-pulse h-7 w-20 rounded-lg" />
+          <div className="hidden md:block bg-gray-600 animate-pulse h-9 w-72 rounded-full" />
+          <div className="flex gap-4">
+            <div className="bg-gray-600 animate-pulse h-6 w-6 rounded-full" />
+            <div className="bg-gray-600 animate-pulse h-6 w-6 rounded-full" />
+            <div className="bg-gray-600 animate-pulse h-8 w-20 rounded-full" />
+          </div>
+        </div>
+        {/* Skeleton Hero */}
+        <div className="bg-gray-200 animate-pulse h-64 md:h-96 w-full" />
+        {/* Skeleton Products */}
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="bg-gray-200 animate-pulse h-6 w-48 rounded-xl mb-6" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100">
+                <div className="bg-gray-200 animate-pulse h-40 w-full" />
+                <div className="p-3 flex flex-col gap-2">
+                  <div className="bg-gray-200 animate-pulse h-3 w-20 rounded" />
+                  <div className="bg-gray-200 animate-pulse h-4 w-full rounded" />
+                  <div className="bg-gray-200 animate-pulse h-5 w-24 rounded" />
+                  <div className="bg-gray-200 animate-pulse h-9 w-full rounded-xl" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
   }
   return (
     <BrowserRouter>
-    <ScrollToTop />
+      <ScrollToTop />
       <Routes>
 
         {/* ===== ADMIN ROUTES — no Navbar/Footer ===== */}

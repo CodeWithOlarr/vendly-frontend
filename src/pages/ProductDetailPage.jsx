@@ -10,6 +10,7 @@ import { useWishlist } from "../context/WishlistContext"
 import { useToast } from "../context/ToastContext"
 import { fetchProductById, fetchProducts, fetchReviews, submitReview } from "../api/productApi"
 import ProductCard from "../components/ProductCard"
+import { ProductDetailSkeleton } from "../components/Skeleton"
 import { LoadingSpinner, ErrorMessage } from "../components/StatusMessage"
 
 function formatPrice(amount) {
@@ -97,7 +98,7 @@ function ProductDetailPage() {
     }
   }
 
-  if (loading) return <LoadingSpinner message="Loading product..." />
+  if (loading) return <ProductDetailPage />
   if (error) return <ErrorMessage message={error} onRetry={loadProduct} />
   if (!product) return null
 
