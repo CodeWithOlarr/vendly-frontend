@@ -106,22 +106,21 @@ function VendorsPage() {
         />
       </div>
 
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => <VendorCardSkeleton key={i} />)}
-        </div>
-      ) : error ? (
-        <ErrorMessage message={error} onRetry={loadVendors} />
-      ) : vendors.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {vendors.map((vendor) => (
-            <VendorCard key={vendor._id} vendor={vendor} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-lg">No vendors found for "{search}"</p>
-        </div>
+      {loading && <LoadingSpinner message="Loading vendors..." />}
+      {error && <ErrorMessage message={error} onRetry={loadVendors} />}
+
+      {!loading && !error && (
+        vendors.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vendors.map((vendor) => (
+              <VendorCard key={vendor._id} vendor={vendor} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-lg">No vendors found for "{search}"</p>
+          </div>
+        )
       )}
     </div>
   )

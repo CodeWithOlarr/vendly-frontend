@@ -10,8 +10,7 @@ import { useWishlist } from "../context/WishlistContext"
 import { useToast } from "../context/ToastContext"
 import { fetchProductById, fetchProducts, fetchReviews, submitReview } from "../api/productApi"
 import ProductCard from "../components/ProductCard"
-import { ProductDetailSkeleton } from "../components/Skeleton"
-import { ErrorMessage } from "../components/StatusMessage"
+import { ErrorMessage, LoadingSpinner } from "../components/StatusMessage"
 
 function formatPrice(amount) {
   return "₦" + amount.toLocaleString("en-NG")
@@ -109,7 +108,7 @@ function ProductDetailPage() {
     }
   }
 
-  if (loading) return <ProductDetailPage />
+  if (loading) return <LoadingSpinner message="Loading product..." />
   if (error) return <ErrorMessage message={error} onRetry={loadProduct} />
   if (!product) return null
 

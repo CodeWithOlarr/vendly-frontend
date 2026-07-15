@@ -316,11 +316,7 @@ function OrdersTab({ getToken }) {
 
     useEffect(() => { loadOrders() }, [])
 
-    if (loading) return (
-        <div className="flex flex-col gap-4">
-            {[...Array(3)].map((_, i) => <OrderRowSkeleton key={i} />)}
-        </div>
-    )
+    if (loading) return <LoadingSpinner message="Loading products..." />
     if (error) return <ErrorMessage message={error} onRetry={loadOrders} />
 
     if (orders.length === 0) {

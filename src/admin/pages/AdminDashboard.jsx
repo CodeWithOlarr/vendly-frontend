@@ -44,7 +44,7 @@ function AdminDashboard() {
 
   useEffect(() => { loadStats() }, [])
 
-  if (loading) return <StatsSkeleton />
+  if (loading) return <LoadingSpinner message="Loading dashboard..." />
   if (error)   return <ErrorMessage message={error} onRetry={loadStats} />
 
   return (

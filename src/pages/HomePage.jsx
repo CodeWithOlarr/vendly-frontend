@@ -3,9 +3,8 @@ import { ArrowRight, Tag, Truck, ShieldCheck, RefreshCw } from "lucide-react"
 import { Link } from "react-router-dom"
 import CategoryCard from "../components/CategoryCard"
 import ProductCard from "../components/ProductCard"
-import { ErrorMessage } from "../components/StatusMessage"
+import { ErrorMessage, LoadingSpinner } from "../components/StatusMessage"
 import { fetchCategoryCounts, fetchFeaturedProducts } from "../api/productApi"
-import { ProductCardSkeleton, CategoryCardSkeleton } from "../components/Skeleton"
 import categories from "../data/categories"
 
 function HomePage() {
@@ -92,62 +91,111 @@ function HomePage() {
       </section>
 
       {/* CATEGORIES */}
-      <section className="px-6 py-12 max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">Shop by Category</h2>
-            <p className="text-gray-500 text-sm mt-1">Find exactly what you're looking for</p>
-          </div>
-          <Link to="/products" className="flex items-center gap-1 text-primary text-sm font-semibold hover:underline">
-            View All <ArrowRight size={16} />
-          </Link>
-        </div>
+     <section className="px-6 py-12 max-w-6xl mx-auto">
+  <div className="flex items-center justify-between mb-6">
+    <div>
+      <h2 className="text-2xl font-bold text-gray-800">
+        Shop by Category
+      </h2>
+      <p className="text-gray-500 text-sm mt-1">
+        Find exactly what you're looking for
+      </p>
+    </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          {loading
-            ? [...Array(8)].map((_, i) => <CategoryCardSkeleton key={i} />)
-            : categories.map((category) => (
-                <CategoryCard
-                  key={category.id}
-                  name={category.name}
-                  icon={category.icon}
-                  color={category.color}
-                  count={categoryCounts[category.name]}
-                />
-              ))
-          }
+    <Link
+      to="/products"
+      className="flex items-center gap-1 text-primary text-sm font-semibold hover:underline"
+    >
+      View All <ArrowRight size={16} />
+    </Link>
+  </div>
+
+  {loading ? (
+    <LoadingSpinner message="Loading categories..." />
+  ) : (
+    <>
+      {/* Mobile */}
+      <div className="md:hidden overflow-x-auto scrollbar-hide">
+        <div className="flex gap-4 snap-x snap-mandatory pb-2">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="snap-start flex-shrink-0 w-36"
+            >
+              <CategoryCard
+                name={category.name}
+                icon={category.icon}
+                color={category.color}
+                count={categoryCounts[category.name]}
+              />
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden md:grid grid-cols-4 lg:grid-cols-8 gap-4">
+        {categories.map((category) => (
+          <CategoryCard
+            key={category.id}
+            name={category.name}
+            icon={category.icon}
+            color={category.color}
+            count={categoryCounts[category.name]}
+          />
+        ))}
+      </div>
+    </>
+  )}
+</section>
 
       {/* FEATURED PRODUCTS */}
       <section className="px-6 py-12 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">Featured Products</h2>
-              <p className="text-gray-500 text-sm mt-1">Handpicked deals just for you</p>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Featured Products
+              </h2>
+              <p className="text-gray-500 text-sm mt-1">
+                Handpicked deals just for you
+              </p>
             </div>
-            <Link to="/products" className="flex items-center gap-1 text-primary text-sm font-semibold hover:underline">
+
+            <Link
+              to="/products"
+              className="flex items-center gap-1 text-primary text-sm font-semibold hover:underline"
+            >
               View All <ArrowRight size={16} />
             </Link>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)}
-            </div>
-          ) : error ? (
-            <ErrorMessage message={error} onRetry={loadData} />
-          ) : products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-400">
-              <p className="text-sm">No featured products yet. Check back soon!</p>
-            </div>
+          {loading && <LoadingSpinner message="Loading products..." />}
+
+          {error && (
+            <ErrorMessage
+              message={error}
+              onRetry={loadData}
+            />
+          )}
+
+          {!loading && !error && (
+            products.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {products.map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    product={product}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-400">
+                <p className="text-sm">
+                  No featured products yet. Check back soon!
+                </p>
+              </div>
+            )
           )}
         </div>
       </section>
