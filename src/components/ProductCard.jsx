@@ -1,8 +1,9 @@
 import { ShoppingCart, Star, Heart } from "lucide-react"
-import { useCart } from "../context/CartContext"
+import { useCart }     from "../context/CartContext"
 import { useWishlist } from "../context/WishlistContext"
-import { useToast } from "../context/ToastContext"
-import { Link } from "react-router-dom"
+import { useToast }    from "../context/ToastContext"
+import { Link }        from "react-router-dom"
+import { fetchProductById } from "../api/productApi"
 
 function formatPrice(amount) {
   return "₦" + amount.toLocaleString("en-NG")
@@ -19,9 +20,9 @@ function getBadgeStyle(badge) {
 }
 
 function ProductCard({ product }) {
-  const { addToCart }                   = useCart()
+  const { addToCart }                    = useCart()
   const { toggleWishlist, isWishlisted } = useWishlist()
-  const { showToast }                   = useToast()
+  const { showToast }                    = useToast()
 
   const { name, price, oldPrice, rating, reviews, vendor, image, badge, inStock } = product
 
@@ -30,6 +31,11 @@ function ProductCard({ product }) {
   const discount = oldPrice
     ? Math.round(((oldPrice - price) / oldPrice) * 100)
     : null
+
+  // ✅ Prefetch product data when user hovers the card
+  function handleMouseEnter() {
+    fetchProductById(product._id).catch(() => {})
+  }
 
   function handleWishlist(e) {
     e.preventDefault()
@@ -47,7 +53,10 @@ function ProductCard({ product }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition border border-gray-100 group overflow-hidden flex flex-col">
+    <div
+      onMouseEnter={handleMouseEnter}
+      className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition border border-gray-100 group overflow-hidden flex flex-col"
+    >
 
       {/* Image Container */}
       <Link to={`/products/${product._id}`}>
@@ -55,6 +64,7 @@ function ProductCard({ product }) {
           <img
             src={image}
             alt={name}
+            loading="lazy"
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
 
